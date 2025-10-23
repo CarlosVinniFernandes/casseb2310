@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Produtos - Sistema de Produtos{% endblock %}
+
+{% block content %}
+<h2>{% if ordenado %}📑 Produtos em Ordem Alfabética{% else %}📋 Lista de Produtos{% endif %}</h2>
+
+{% if produtos %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Valor Unitário</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos %}
+            <tr>
+                <td>{{ produto.id }}</td>
+                <td>{{ produto.produto }}</td>
+                <td>{{ produto.quantidade }}</td>
+                <td>R$ {{ "%.2f"|format(produto.valor) }}</td>
+                <td>
+                    <a href="{{ url_for('comprar_produto', produto_id=produto.id) }}" class="btn btn-success">🛒 Comprar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="empty-state">
+        <h2>📦 Nenhum produto cadastrado</h2>
+        <p>Comece adicionando seu primeiro produto!</p>
+        <br>
+        <a href="{{ url_for('adicionar_produto') }}" class="btn">➕ Adicionar Produto</a>
+    </div>
+{% endif %}
+{% endblock %}
