@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Produtos{% endblock %}</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Sistema de Produtos{% endblock %}</title>
+        <style>
         * {
             margin: 0;
             padding: 0;
@@ -207,29 +207,31 @@
             margin: 20px 0;
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🛒 Sistema de Gestão de Produtos</h1>
-            <nav>
-                <a href="{{ url_for('index') }}">📋 Lista de Produtos</a>
-                <a href="{{ url_for('listar_alfabetica') }}">🔤 Ordem Alfabética</a>
-                <a href="{{ url_for('adicionar_produto') }}">➕ Adicionar Produto</a>
-            </nav>
-        </header>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>🛒 Sistema de Gestão de Produtos</h1>
+                <nav>
+                    <a href="{{ url_for('index') }}">📋 Lista de Produtos</a>
+                    <a href="{{ url_for('listar_alfabetica') }}">🔤 Ordem
+                        Alfabética</a>
+                    <a href="{{ url_for('adicionar_produto') }}">➕ Adicionar
+                        Produto</a>
+                </nav>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
             {% endif %}
-        {% endwith %}
-        
-        {% block content %}{% endblock %}
-    </div>
-</body>
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </body>
 </html>

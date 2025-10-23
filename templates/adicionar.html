@@ -8,19 +8,22 @@
 <form method="POST" action="{{ url_for('adicionar_produto') }}">
     <div class="form-group">
         <label for="produto">Nome do Produto *</label>
-        <input type="text" id="produto" name="produto" required placeholder="Ex: Notebook Dell">
+        <input type="text" id="produto" name="produto" required
+            placeholder="Ex: Notebook Dell">
     </div>
-    
+
     <div class="form-group">
         <label for="quantidade">Quantidade em Estoque *</label>
-        <input type="number" id="quantidade" name="quantidade" required min="0" placeholder="Ex: 10">
+        <input type="number" id="quantidade" name="quantidade" required min="0"
+            placeholder="Ex: 10">
     </div>
-    
+
     <div class="form-group">
         <label for="valor">Valor Unitário (R$) *</label>
-        <input type="number" id="valor" name="valor" required min="0.01" step="0.01" placeholder="Ex: 2500.00">
+        <input type="number" id="valor" name="valor" required min="0.01"
+            step="0.01" placeholder="Ex: 2500.00">
     </div>
-    
+
     <button type="submit" class="btn btn-success">✅ Adicionar Produto</button>
     <a href="{{ url_for('index') }}" class="btn">❌ Cancelar</a>
 </form>

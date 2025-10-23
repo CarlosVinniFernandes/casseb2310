@@ -5,60 +5,71 @@
 {% block content %}
 <h2>🛒 Comprar Produto</h2>
 
-<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+<div
+    style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
     <h3>Produto Selecionado</h3>
     <p><strong>Nome:</strong> {{ produto.produto }}</p>
-    <p><strong>Valor Unitário:</strong> R$ {{ "%.2f"|format(produto.valor) }}</p>
-    <p><strong>Disponível em Estoque:</strong> {{ produto.quantidade }} unidades</p>
+    <p><strong>Valor Unitário:</strong> R$ {{ "%.2f"|format(produto.valor)
+        }}</p>
+    <p><strong>Disponível em Estoque:</strong> {{ produto.quantidade }}
+        unidades</p>
 </div>
 
 {% if preview %}
-    {% if disponivel %}
-        <div class="preview-box">
-            <h3>📊 Resumo da Compra</h3>
-            <div class="preview-item">
-                <span>Produto:</span>
-                <span>{{ produto.produto }}</span>
-            </div>
-            <div class="preview-item">
-                <span>Quantidade:</span>
-                <span>{{ quantidade }}</span>
-            </div>
-            <div class="preview-item">
-                <span>Valor Unitário:</span>
-                <span>R$ {{ "%.2f"|format(produto.valor) }}</span>
-            </div>
-            <div class="preview-item">
-                <span>Total:</span>
-                <span>R$ {{ "%.2f"|format(total) }}</span>
-            </div>
-        </div>
-        
-        <p style="margin: 20px 0;"><strong>Deseja confirmar esta compra?</strong></p>
-        
-        <form method="POST" action="{{ url_for('comprar_produto', produto_id=produto.id) }}" style="display: inline;">
-            <input type="hidden" name="quantidade" value="{{ quantidade }}">
-            <input type="hidden" name="confirmar" value="true">
-            <button type="submit" class="btn btn-success">✅ Confirmar Compra</button>
-        </form>
-        <a href="{{ url_for('comprar_produto', produto_id=produto.id) }}" class="btn">❌ Cancelar</a>
-    {% else %}
-        <div class="alert-warning">
-            <strong>⚠️ Estoque Insuficiente!</strong><br>
-            Você solicitou {{ quantidade }} unidades, mas temos apenas {{ produto.quantidade }} em estoque.
-        </div>
-        <a href="{{ url_for('comprar_produto', produto_id=produto.id) }}" class="btn">🔙 Voltar</a>
-    {% endif %}
+{% if disponivel %}
+<div class="preview-box">
+    <h3>📊 Resumo da Compra</h3>
+    <div class="preview-item">
+        <span>Produto:</span>
+        <span>{{ produto.produto }}</span>
+    </div>
+    <div class="preview-item">
+        <span>Quantidade:</span>
+        <span>{{ quantidade }}</span>
+    </div>
+    <div class="preview-item">
+        <span>Valor Unitário:</span>
+        <span>R$ {{ "%.2f"|format(produto.valor) }}</span>
+    </div>
+    <div class="preview-item">
+        <span>Total:</span>
+        <span>R$ {{ "%.2f"|format(total) }}</span>
+    </div>
+</div>
+
+<p style="margin: 20px 0;"><strong>Deseja confirmar esta compra?</strong></p>
+
+<form method="POST"
+    action="{{ url_for('comprar_produto', produto_id=produto.id) }}"
+    style="display: inline;">
+    <input type="hidden" name="quantidade" value="{{ quantidade }}">
+    <input type="hidden" name="confirmar" value="true">
+    <button type="submit" class="btn btn-success">✅ Confirmar Compra</button>
+</form>
+<a href="{{ url_for('comprar_produto', produto_id=produto.id) }}" class="btn">❌
+    Cancelar</a>
 {% else %}
-    <form method="POST" action="{{ url_for('comprar_produto', produto_id=produto.id) }}">
-        <div class="form-group">
-            <label for="quantidade">Quantidade a Comprar *</label>
-            <input type="number" id="quantidade" name="quantidade" required min="1" max="{{ produto.quantidade }}" placeholder="Ex: 1">
-            <small style="color: #666;">Máximo disponível: {{ produto.quantidade }}</small>
-        </div>
-        
-        <button type="submit" class="btn btn-success">🔍 Calcular Total</button>
-        <a href="{{ url_for('index') }}" class="btn">❌ Cancelar</a>
-    </form>
+<div class="alert-warning">
+    <strong>⚠️ Estoque Insuficiente!</strong><br>
+    Você solicitou {{ quantidade }} unidades, mas temos apenas {{
+    produto.quantidade }} em estoque.
+</div>
+<a href="{{ url_for('comprar_produto', produto_id=produto.id) }}" class="btn">🔙
+    Voltar</a>
+{% endif %}
+{% else %}
+<form method="POST"
+    action="{{ url_for('comprar_produto', produto_id=produto.id) }}">
+    <div class="form-group">
+        <label for="quantidade">Quantidade a Comprar *</label>
+        <input type="number" id="quantidade" name="quantidade" required min="1"
+            max="{{ produto.quantidade }}" placeholder="Ex: 1">
+        <small style="color: #666;">Máximo disponível: {{ produto.quantidade
+            }}</small>
+    </div>
+
+    <button type="submit" class="btn btn-success">🔍 Calcular Total</button>
+    <a href="{{ url_for('index') }}" class="btn">❌ Cancelar</a>
+</form>
 {% endif %}
 {% endblock %}
