@@ -1,0 +1,25 @@
+[pylint]
+max-line-length=100
+disable=
+    C0111,  # missing-docstring
+    R0903,  # too-few-public-methods
+    
+good-names=i,j,k,ex,Run,_,id,app
+
+[pylint.BASIC]
+good-names=i,j,k,ex,Run,_,id,f,db,app,manager
+
+[pylint.FORMAT]
+max-line-length=100
+
+[pylint.MESSAGES CONTROL]
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-few-public-methods,
+    invalid-name,
+    
+[pylint.DESIGN]
+max-args=7
+max-attributes=10

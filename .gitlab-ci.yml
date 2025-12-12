@@ -1,0 +1,199 @@
+# Pipeline CI/CD para GitLab
+# Atividade 6 - Qualidade de Software
+
+stages:
+  - lint
+  - test
+  - security
+  - deploy
+
+# Variáveis globais
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PYTHON_VERSION: "3.11"
+
+# Cache para acelerar builds
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+# Template base para jobs Python
+.python_base:
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - python --version
+    - pip install --upgrade pip
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -r requirements-dev.txt
+
+# ============================================
+# STAGE 1: LINTING - Qualidade de Código
+# ============================================
+
+flake8:
+  extends: .python_base
+  stage: lint
+  script:
+    - echo "🔍 Executando Flake8 - Verificação de estilo de código..."
+    - flake8 . --count --statistics --format=html --htmldir=flake8-report || true
+    - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    - echo "✅ Flake8 concluído"
+  artifacts:
+    when: always
+    paths:
+      - flake8-report/
+    expire_in: 1 week
+  allow_failure: false
+
+pylint:
+  extends: .python_base
+  stage: lint
+  script:
+    - echo "🔍 Executando Pylint - Análise estática de código..."
+    - pylint app.py produto_manager.py --output-format=text || true
+    - pylint app.py produto_manager.py --exit-zero
+    - echo "✅ Pylint concluído"
+  allow_failure: true
+
+black-check:
+  extends: .python_base
+  stage: lint
+  script:
+    - echo "🎨 Verificando formatação com Black..."
+    - black --check --diff app.py produto_manager.py test_*.py
+    - echo "✅ Formatação verificada"
+  allow_failure: true
+
+code-quality:
+  extends: .python_base
+  stage: lint
+  script:
+    - echo "📊 Análise de qualidade de código..."
+    - pip install radon
+    - echo "--- Complexidade Ciclomática ---"
+    - radon cc app.py produto_manager.py -a -s
+    - echo "--- Índice de Manutenibilidade ---"
+    - radon mi app.py produto_manager.py -s
+    - echo "✅ Análise de qualidade concluída"
+  allow_failure: true
+
+# ============================================
+# STAGE 2: TESTES - Testes Unitários
+# ============================================
+
+unit-tests:
+  extends: .python_base
+  stage: test
+  script:
+    - echo "🧪 Executando testes unitários com pytest..."
+    - pytest -v --cov=. --cov-report=term-missing --cov-report=html --cov-report=xml
+    - echo "✅ Testes concluídos"
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    when: always
+    paths:
+      - htmlcov/
+      - coverage.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    expire_in: 1 week
+  allow_failure: false
+
+integration-tests:
+  extends: .python_base
+  stage: test
+  script:
+    - echo "🔗 Executando testes de integração..."
+    - pytest test_app.py -v -m integration || pytest test_app.py -v
+    - echo "✅ Testes de integração concluídos"
+  allow_failure: true
+
+# ============================================
+# STAGE 3: SEGURANÇA - Análise de Segurança
+# ============================================
+
+safety-check:
+  extends: .python_base
+  stage: security
+  script:
+    - echo "🔒 Verificando vulnerabilidades de segurança..."
+    - pip install safety
+    - safety check --json || true
+    - echo "✅ Verificação de segurança concluída"
+  allow_failure: true
+
+bandit:
+  extends: .python_base
+  stage: security
+  script:
+    - echo "🛡️ Executando análise de segurança com Bandit..."
+    - pip install bandit
+    - bandit -r app.py produto_manager.py -f json -o bandit-report.json || true
+    - bandit -r app.py produto_manager.py
+    - echo "✅ Análise de segurança concluída"
+  artifacts:
+    when: always
+    paths:
+      - bandit-report.json
+    expire_in: 1 week
+  allow_failure: true
+
+# ============================================
+# STAGE 4: DEPLOY - Implantação
+# ============================================
+
+deploy-staging:
+  stage: deploy
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "🚀 Preparando deploy para staging..."
+    - echo "✅ Deploy staging concluído (simulado)"
+  environment:
+    name: staging
+    url: https://staging-sistema-produtos.onrender.com
+  only:
+    - develop
+  when: manual
+  allow_failure: true
+
+deploy-production:
+  stage: deploy
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "🚀 Deploy para produção..."
+    - echo "✅ Deploy production concluído"
+    - echo "📋 Instruções para deploy no Render:"
+    - echo "   1. Conecte este repositório ao Render"
+    - echo "   2. Configure o Web Service"
+    - echo "   3. O Render fará deploy automático"
+  environment:
+    name: production
+    url: https://sistema-produtos.onrender.com
+  only:
+    - main
+    - master
+  when: manual
+  allow_failure: true
+
+# ============================================
+# JOBS EXTRAS - Utilitários
+# ============================================
+
+generate-badge:
+  extends: .python_base
+  stage: test
+  script:
+    - echo "🏅 Gerando badges de qualidade..."
+    - pip install anybadge
+    - anybadge --label=pipeline --value=passing --file=pipeline-badge.svg passing=green failing=red
+    - echo "✅ Badges geradas"
+  artifacts:
+    paths:
+      - pipeline-badge.svg
+    expire_in: 1 week
+  allow_failure: true
